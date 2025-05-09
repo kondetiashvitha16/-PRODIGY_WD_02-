@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Stopwatch Web Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .stopwatch {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .time-display {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .controls button:hover {
+            opacity: 0.9;
+        }
+
+        .start {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .pause {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .reset {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .lap {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .laps {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .laps li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            list-style: decimal;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stopwatch Application</h1>
+    <div class="stopwatch">
+        <div class="time-display" id="time">00:00:00</div>
+        <div class="controls">
+            <button class="start" onclick="startStopwatch()">Start</button>
+            <button class="pause" onclick="pauseStopwatch()">Pause</button>
+            <button class="reset" onclick="resetStopwatch()">Reset</button>
+            <button class="lap" onclick="recordLap()">Lap</button>
+        </div>
+        <ul class="laps" id="laps"></ul>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        let running = false;
+
+        function updateDisplay(time) {
+            const timeEl = document.getElementById("time");
+            const hours = String(Math.floor(time / 3600000)).padStart(2, '0');
+            const minutes = String(Math.floor((time % 3600000) / 60000)).padStart(2, '0');
+            const seconds = String(Math.floor((time % 60000) / 1000)).padStart(2, '0');
+            timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function startStopwatch() {
+            if (!running) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    updateDisplay(elapsedTime);
+                }, 1000);
+                running = true;
+            }
+        }
+
+        function pauseStopwatch() {
+            clearInterval(timerInterval);
+            running = false;
+        }
+
+        function resetStopwatch() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            running = false;
+            updateDisplay(elapsedTime);
+            document.getElementById("laps").innerHTML = "";
+        }
+
+        function recordLap() {
+            if (!running) return;
+            const lapTime = document.getElementById("time").textContent;
+            const li = document.createElement("li");
+            li.textContent = `Lap: ${lapTime}`;
+            document.getElementById("laps").appendChild(li);
+        }
+    </script>
+</body>
+</html>
